@@ -16,13 +16,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Параметры RTSP
-RTSP_URL = ["rtsp://your_rtsp_stream","rtsp://your_rtsp_stream2",...]
+RTSP_URLs = ["rtsp://your_rtsp_stream","rtsp://your_rtsp_stream2",...,"rtsp://your_rtsp_stream20"]
 RTSP_CHECK_INTERVAL = 60        # Интервал проверки в секундах
 FPS_THRESHOLD = 5               # Пороговое значение FPS
 
 # Параметры для проверки наличия файлов
-FOLDER_PATH = "your_folder_path"
-FILE_CHECK_INTERVAL = 1800      # Интервал проверки в секундах (30 минут)
+FOLDER_PATHs = ["your_folder_path","your_folder_path1",...,"your_folder_path20"]
+FILE_CHECK_INTERVAL = 2400      # Интервал проверки в секундах (40 минут)
 
 # Параметры Telegram
 TELEGRAM_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
@@ -77,38 +77,27 @@ def monitor_folder(bot: Bot):
                      and datetime.fromtimestamp(os.path.getmtime(os.path.join(FOLDER_PATH, f))) > last_check_time]
 
         if not new_files:
-            logger.warning("Нет новых файлов в папке за последние 30 минут")
-            send_telegram_notification(bot, "Нет новых файлов в папке за последние 30 минут")
+            logger.warning("Нет новых файлов в папке за последние 40 минут")
+            send_telegram_notification(bot, "Нет новых файлов в папке за последние 40 минут")
 
         last_check_time = now
         time.sleep(FILE_CHECK_INTERVAL)
-      
-# Функция для пингования камеры
-def ping_camera(bot: Bot):
-    while True:
-        try:
-            response = requests.get(CAMERA_IP, timeout=10)
-            if response.status_code == 200:
-                logger.info("Камера доступна по IP: %s", CAMERA_IP)
-            else:
-                logger.warning("Камера вернула ошибку. Код состояния: %d", response.status_code)
-                send_telegram_notification(bot, f"Камера вернула ошибку. Код состояния: {response.status_code}")
-        except requests.RequestException as e:
-            logger.error("Ошибка при подключении к камере: %s", e)
-            send_telegram_notification(bot, f"Ошибка при подключении к камере: {e}")
 
-        time.sleep(CHECK_INTERVAL)
-        
+
 if __name__ == '__main__':
     bot = Bot(token=TELEGRAM_TOKEN)
 
-    # Запускаем мониторинг RTSP и проверки файлов в папке в отдельных потоках
-    from threading import Thread
-    rtsp_thread = Thread(target=monitor_rtsp_stream, args=(bot,))
-    folder_thread = Thread(target=monitor_folder, args=(bot,))
-    
-    rtsp_thread.start()
-    folder_thread.start()
-    
-    rtsp_thread.join()
-    folder_thread.join()
+    for i in range(0,len(RTSP_URLs)):
+        RTSP_URL = RTSP_URLs(i)
+        FOLDER_PATH = FOLDERPATHs(i)
+
+        # Запускаем мониторинг RTSP и проверки файлов в папке в отдельных потоках
+        from threading import Thread
+        rtsp_thread = Thread(target=monitor_rtsp_stream, args=(bot,))
+        folder_thread = Thread(target=monitor_folder, args=(bot,))
+        
+        rtsp_thread.start()
+        folder_thread.start()
+        
+        rtsp_thread.join()
+        folder_thread.join()
