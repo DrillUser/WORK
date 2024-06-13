@@ -4,7 +4,7 @@ import cv2
 import time
 import logging
 from telegram import Bot
-from datetime import datetime
+from datetime import datetime, timedelta
 from threading import Thread
 
 # Логирование в файл
