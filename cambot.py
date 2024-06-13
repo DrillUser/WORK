@@ -16,9 +16,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Параметры RTSP
-RTSP_URL = "rtsp://your_rtsp_stream"
+RTSP_URL = ["rtsp://your_rtsp_stream","rtsp://your_rtsp_stream2",...]
 RTSP_CHECK_INTERVAL = 60        # Интервал проверки в секундах
-FPS_THRESHOLD = 10              # Пороговое значение FPS
+FPS_THRESHOLD = 5               # Пороговое значение FPS
 
 # Параметры для проверки наличия файлов
 FOLDER_PATH = "your_folder_path"
